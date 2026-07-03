@@ -76,7 +76,7 @@ private struct OverviewTab: View {
                 }
 
                 HStack(alignment: .top, spacing: 16) {
-                    SectionPanel(title: "Top Apps") {
+                    SectionPanel(title: "Top Apps & Sites") {
                         BucketListView(buckets: appState.todaySummary.topApps)
                     }
 

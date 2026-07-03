@@ -26,7 +26,7 @@ struct ReportsView: View {
                         }
 
                         HStack(alignment: .top, spacing: 16) {
-                            SectionPanel(title: "Top Apps") {
+                            SectionPanel(title: "Top Apps & Sites") {
                                 ReportBucketComparisonList(
                                     currentBuckets: reportPair.current.topApps,
                                     previousBuckets: reportPair.previous.topApps

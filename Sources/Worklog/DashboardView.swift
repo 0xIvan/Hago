@@ -8,7 +8,7 @@ struct DashboardView: View {
     var body: some View {
         NavigationSplitView {
             List(WorklogSection.allCases, selection: $appState.selectedSection) { section in
-                Label(section.title, systemImage: section.symbolName)
+                SidebarSectionLabel(section: section, reviewCount: appState.reviewSegments.count)
                     .tag(section)
             }
             .navigationSplitViewColumnWidth(min: 160, ideal: 180, max: 220)
@@ -42,6 +42,21 @@ struct DashboardView: View {
         }
     }
 }
+
+private struct SidebarSectionLabel: View {
+    let section: WorklogSection
+    let reviewCount: Int
+
+    var body: some View {
+        if section == .review && reviewCount > 0 {
+            Label(section.title, systemImage: section.symbolName)
+                .badge(reviewCount)
+        } else {
+            Label(section.title, systemImage: section.symbolName)
+        }
+    }
+}
+
 private struct OverviewTab: View {
     @EnvironmentObject private var appState: AppState
     private let formatter = TimeFormatting()

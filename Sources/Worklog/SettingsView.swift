@@ -376,7 +376,7 @@ private enum RuleFieldFilter: String, CaseIterable, Identifiable {
     }
 }
 
-private struct RuleEditorView: View {
+struct RuleEditorView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var name: String
@@ -392,6 +392,7 @@ private struct RuleEditorView: View {
     var rule: Rule
     var projects: [Project]
     var categories: [WorklogCore.Category]
+    var allowsDelete: Bool
     var onDelete: (Rule, ReclassificationScope?) -> Void
     var onSave: (Rule, ReclassificationScope?) -> Void
 
@@ -399,12 +400,14 @@ private struct RuleEditorView: View {
         rule: Rule,
         projects: [Project],
         categories: [WorklogCore.Category],
+        allowsDelete: Bool = true,
         onDelete: @escaping (Rule, ReclassificationScope?) -> Void,
         onSave: @escaping (Rule, ReclassificationScope?) -> Void
     ) {
         self.rule = rule
         self.projects = projects
         self.categories = categories
+        self.allowsDelete = allowsDelete
         self.onDelete = onDelete
         self.onSave = onSave
 
@@ -472,11 +475,13 @@ private struct RuleEditorView: View {
             }
 
             HStack {
-                Button(role: .destructive) {
-                    onDelete(rule, reclassificationScope)
-                    dismiss()
-                } label: {
-                    Label("Delete", systemImage: "trash")
+                if allowsDelete {
+                    Button(role: .destructive) {
+                        onDelete(rule, reclassificationScope)
+                        dismiss()
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
                 }
 
                 Spacer()

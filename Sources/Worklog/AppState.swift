@@ -1,7 +1,6 @@
 import AppKit
 import Combine
 import Foundation
-import SwiftUI
 import WorklogCore
 
 @MainActor
@@ -89,25 +88,21 @@ final class AppState: ObservableObject {
         prepareToOpenAppWindow()
 
         if dashboardWindow == nil {
-            let controller = NSHostingController(
-                rootView: DashboardView()
-                    .environmentObject(self)
-            )
-            let window = NSWindow(contentViewController: controller)
-            window.title = "Worklog"
-            window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-            window.setContentSize(NSSize(width: 1_020, height: 720))
-            window.isReleasedWhenClosed = false
-            window.center()
-            dashboardWindow = window
+            dashboardWindow = NSApp.windows.first {
+                $0.identifier?.rawValue == "dashboard" || $0.title == "Hago"
+            }
         }
 
         appWindowDidAppear(id: "dashboard")
+        dashboardWindow?.deminiaturize(nil)
         dashboardWindow?.makeKeyAndOrderFront(nil)
         reload()
     }
 
-    func appWindowDidAppear(id: String) {
+    func appWindowDidAppear(id: String, window: NSWindow? = nil) {
+        if id == "dashboard", let window {
+            dashboardWindow = window
+        }
         visibleAppWindows.insert(id)
         prepareToOpenAppWindow()
     }

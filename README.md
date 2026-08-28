@@ -1,6 +1,6 @@
-# Worklog
+# Hago
 
-Worklog is a local macOS menu bar app for tracking active-window time and reviewing how the day was spent.
+Hago is a local macOS menu bar app for tracking active-window time and reviewing how the day was spent.
 
 ## What It Tracks
 
@@ -13,7 +13,7 @@ Chrome incognito windows are detected before tab URL/title collection and treate
 
 ## Local Storage
 
-Worklog stores data locally in SQLite:
+Hago stores data locally in SQLite. The existing Worklog support directory remains unchanged so upgrades keep all history:
 
 ```text
 ~/Library/Application Support/Worklog/worklog.sqlite
@@ -25,7 +25,7 @@ Ignored activity is not persisted as detailed activity rows.
 
 ## Permissions
 
-Worklog may request:
+Hago may request:
 
 - Accessibility permission, used to read active window titles.
 - Automation/Apple Events permission for Chrome, used to read the active tab URL and title.
@@ -36,12 +36,12 @@ Without those permissions, the app can still track app-level activity, but class
 
 ```sh
 swift test
-swift build -c release --product Worklog
+swift build -c release --product Hago
 ```
 
 ## Download And Install
 
-Download the latest `Worklog.app.zip` from [GitHub Releases](https://github.com/0xIvan/WorkLog/releases/latest), unzip it, and move `Worklog.app` to `/Applications`.
+Download the latest `Hago.app.zip` from [GitHub Releases](https://github.com/0xIvan/WorkLog/releases/latest), unzip it, and move `Hago.app` to `/Applications`.
 
 You can also install the latest release from Terminal:
 
@@ -49,7 +49,7 @@ You can also install the latest release from Terminal:
 curl -fsSL https://raw.githubusercontent.com/0xIvan/WorkLog/main/scripts/install-release.sh | bash
 ```
 
-Release notes indicate whether a build is notarized. The release workflow is configured for Developer ID signing and notarization once the required Apple secrets are added. Older ad hoc signed releases may require right-clicking `Worklog.app` and choosing `Open` on first launch.
+Release notes indicate whether a build is notarized. The release workflow is configured for Developer ID signing and notarization once the required Apple secrets are added. Older ad hoc signed releases may require right-clicking `Hago.app` and choosing `Open` on first launch.
 
 ## Local Package And Install
 
@@ -57,7 +57,7 @@ Release notes indicate whether a build is notarized. The release workflow is con
 scripts/install-app.sh
 ```
 
-The install script packages the app, signs it, copies it to `/Applications/Worklog.app`, and opens it.
+The install script packages the app, signs it, copies it to `/Applications/Hago.app`, removes the old `/Applications/Worklog.app` bundle, and opens Hago.
 
 By default it uses a local signing identity named `Worklog Local Code Signing` if one exists. Override it with:
 
@@ -76,7 +76,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-After the required secrets are configured, the release workflow runs tests, packages `Worklog.app`, Developer ID signs it, submits it to Apple's notary service, staples the notarization ticket, zips it, writes a checksum, and uploads both files to the GitHub release.
+After the required secrets are configured, the release workflow runs tests, packages `Hago.app`, Developer ID signs it, submits it to Apple's notary service, staples the notarization ticket, zips it, writes a checksum, and uploads both files to the GitHub release.
 
 ### Release Secrets
 

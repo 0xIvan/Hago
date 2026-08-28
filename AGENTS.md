@@ -1,17 +1,17 @@
-# Worklog Agent Instructions
+# Hago Agent Instructions
 
 ## Project
 - Work in this repo: `/Users/ivan/code/worklog`.
 - Do not use the Codex thread folder for Worklog source changes.
-- Worklog is a native macOS menu bar app built with SwiftPM.
-- The installed local app is `/Applications/Worklog.app`.
+- Hago is a native macOS menu bar app built with SwiftPM in the Worklog source repository.
+- The installed local app is `/Applications/Hago.app`.
 - The local SQLite database is `~/Library/Application Support/Worklog/worklog.sqlite`.
 - The app is fully local; do not add remote analytics, sync, or telemetry unless explicitly requested.
 
 ## Verification and Install
 - After code changes, run `swift test`.
 - After tests pass, run `scripts/install-app.sh` so the app in `/Applications` is replaced and reopened.
-- `scripts/install-app.sh` packages a release app, quits the running app, signs with `Worklog Local Code Signing` when available or ad hoc otherwise, copies to `/Applications`, and opens it.
+- `scripts/install-app.sh` packages a release app, quits the running app, signs with `Worklog Local Code Signing` when available or ad hoc otherwise, copies Hago to `/Applications`, and opens it.
 - Generated artifacts such as `.build/` and `outputs/` are ignored; clean them after commit/push with `rm -rf .build outputs`.
 - If a change is documentation-only, tests and reinstall are not required; say that clearly.
 

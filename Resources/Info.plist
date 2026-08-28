@@ -4,14 +4,18 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Hago</string>
 	<key>CFBundleExecutable</key>
-	<string>Worklog</string>
+	<string>Hago</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>local.worklog.app</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Worklog</string>
+	<string>Hago</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -21,7 +25,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>14.0</string>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Worklog reads the active Chrome tab URL and title to classify time as work, personal, or review.</string>
+	<string>Hago reads the active Chrome tab URL and title to classify time as work, personal, or review.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 </dict>

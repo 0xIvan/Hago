@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 import WorklogCore
 
@@ -15,6 +16,53 @@ struct ActivityClassifierTests {
 
         #expect(result.kind == .work)
         #expect(result.projectID == nil)
+    }
+
+    @Test
+    func visualStudioCodeIsWorkWithoutARecognizedRepository() {
+        let result = classifier.classify(
+            snapshot: snapshot(
+                appName: "Code",
+                bundleIdentifier: "com.microsoft.VSCode",
+                title: "Untitled-1"
+            ),
+            rules: rules
+        )
+
+        #expect(result.kind == .work)
+        #expect(result.projectID == nil)
+    }
+
+    @Test
+    func visualStudioCodeRepositoryRuleAssignsTheProjectBeforeTheAppFallback() {
+        let projectID = UUID(uuidString: "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA")!
+        let repositoryRule = Rule(
+            name: "Reflekt repository",
+            priority: 150,
+            enabled: true,
+            isBuiltIn: false,
+            action: RuleAction(
+                kind: .work,
+                categoryID: SeedData.workCategoryID,
+                projectID: projectID
+            ),
+            conditions: [
+                RuleCondition(field: .windowTitle, operation: .contains, value: "Reflekt")
+            ]
+        )
+
+        let result = classifier.classify(
+            snapshot: snapshot(
+                appName: "Code",
+                bundleIdentifier: "com.microsoft.VSCode",
+                title: "chat-messages.tsx — Reflekt-UI"
+            ),
+            rules: rules + [repositoryRule]
+        )
+
+        #expect(result.kind == .work)
+        #expect(result.projectID == projectID)
+        #expect(result.ruleID == repositoryRule.id)
     }
 
     @Test

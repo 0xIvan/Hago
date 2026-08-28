@@ -6,7 +6,7 @@ struct WorklogApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        Window("Worklog", id: "dashboard") {
+        Window("Hago", id: "dashboard") {
             DashboardView()
                 .environmentObject(appDelegate.appState)
         }

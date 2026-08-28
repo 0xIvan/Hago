@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="Worklog"
+APP_NAME="Hago"
 APP_DIR="${1:-outputs/$APP_NAME.app}"
 NOTARY_ARCHIVE="${2:-outputs/$APP_NAME-notarization.zip}"
 SIGN_IDENTITY="${WORKLOG_CODE_SIGN_IDENTITY:-}"

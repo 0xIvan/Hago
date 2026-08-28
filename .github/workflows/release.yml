@@ -89,19 +89,19 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        run: scripts/notarize-app.sh outputs/Worklog.app outputs/Worklog-notarization.zip
+        run: scripts/notarize-app.sh outputs/Hago.app outputs/Hago-notarization.zip
 
       - name: Create release archive
         run: |
-          ditto -c -k --sequesterRsrc --keepParent outputs/Worklog.app outputs/Worklog.app.zip
-          shasum -a 256 outputs/Worklog.app.zip > outputs/Worklog.app.zip.sha256
+          ditto -c -k --sequesterRsrc --keepParent outputs/Hago.app outputs/Hago.app.zip
+          shasum -a 256 outputs/Hago.app.zip > outputs/Hago.app.zip.sha256
 
       - name: Write release notes
         run: |
           cat > outputs/release-notes.md <<'EOF'
           ## Install
 
-          Download `Worklog.app.zip`, unzip it, and move `Worklog.app` to `/Applications`.
+          Download `Hago.app.zip`, unzip it, and move `Hago.app` to `/Applications`.
 
           You can also install the latest release from Terminal:
 
@@ -119,11 +119,11 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
 
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" outputs/Worklog.app.zip outputs/Worklog.app.zip.sha256 --clobber
+            gh release upload "$TAG" outputs/Hago.app.zip outputs/Hago.app.zip.sha256 --clobber
           else
             gh release create "$TAG" \
-              outputs/Worklog.app.zip \
-              outputs/Worklog.app.zip.sha256 \
-              --title "Worklog $TAG" \
+              outputs/Hago.app.zip \
+              outputs/Hago.app.zip.sha256 \
+              --title "Hago $TAG" \
               --notes-file outputs/release-notes.md
           fi

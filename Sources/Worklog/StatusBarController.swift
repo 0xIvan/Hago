@@ -3,10 +3,12 @@ import Combine
 import SwiftUI
 
 @MainActor
-final class StatusBarController: NSObject {
+final class StatusBarController: NSObject, NSMenuDelegate {
     private let appState: AppState
     private let statusItem: NSStatusItem
-    private let popover = NSPopover()
+    private let menu = NSMenu()
+    private let menuItem = NSMenuItem()
+    private weak var menuContentView: NSView?
     private var cancellables: Set<AnyCancellable> = []
 
     init(appState: AppState) {
@@ -16,7 +18,7 @@ final class StatusBarController: NSObject {
         super.init()
 
         configureButton()
-        configurePopover()
+        configureMenu()
         bindState()
         updateButton()
     }
@@ -26,30 +28,34 @@ final class StatusBarController: NSObject {
             return
         }
 
-        button.target = self
-        button.action = #selector(togglePopover)
         button.font = statusTextFont()
-        button.image = nil
+        button.image = statusImage()
+        button.imagePosition = .imageLeading
+        button.imageScaling = .scaleProportionallyDown
     }
 
-    private func configurePopover() {
-        popover.behavior = .transient
-        popover.contentSize = NSSize(width: 240, height: 260)
-        popover.contentViewController = NSHostingController(
+    private func configureMenu() {
+        menu.autoenablesItems = false
+        menu.delegate = self
+
+        let contentView = NSHostingView(
             rootView: MenuBarContentView(
-                openSettings: { [weak appState] in
-                    appState?.openSettingsWindow()
+                openSettings: { [weak self, weak appState] in
+                    self?.menu.cancelTracking()
+                    DispatchQueue.main.async {
+                        appState?.openSettingsWindow()
+                    }
                 }
             )
             .environmentObject(appState)
         )
+        contentView.frame.size = contentView.fittingSize
+        menuContentView = contentView
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(popoverDidClose),
-            name: NSPopover.didCloseNotification,
-            object: popover
-        )
+        menuItem.isEnabled = true
+        menuItem.view = contentView
+        menu.addItem(menuItem)
+        statusItem.menu = menu
     }
 
     private func bindState() {
@@ -68,26 +74,36 @@ final class StatusBarController: NSObject {
         }
 
         button.attributedTitle = statusTitle(appState.menuBarTitle)
-        button.setAccessibilityLabel("Worklog \(appState.menuBarTitle)")
+        button.setAccessibilityLabel("Hago \(appState.menuBarTitle)")
     }
 
     private func statusTitle(_ value: String) -> NSAttributedString {
-        let title = NSMutableAttributedString()
-
-        if let image = statusImage() {
-            let attachment = NSTextAttachment()
-            attachment.image = image
-            attachment.bounds = NSRect(x: 0, y: -2.5, width: 16, height: 16)
-            title.append(NSAttributedString(attachment: attachment))
+        let font = statusTextFont()
+        let parts = value.components(separatedBy: " | ")
+        guard parts.count == 2 else {
+            return NSAttributedString(
+                string: value,
+                attributes: [.font: font]
+            )
         }
 
-        title.append(NSAttributedString(string: " "))
+        let title = NSMutableAttributedString(
+            string: "\(parts[0]) ",
+            attributes: [.font: font]
+        )
         title.append(
             NSAttributedString(
-                string: value,
+                string: "|",
                 attributes: [
-                    .font: statusTextFont()
+                    .font: font,
+                    .baselineOffset: 1
                 ]
+            )
+        )
+        title.append(
+            NSAttributedString(
+                string: " \(parts[1])",
+                attributes: [.font: font]
             )
         )
 
@@ -101,33 +117,53 @@ final class StatusBarController: NSObject {
     }
 
     private func statusImage() -> NSImage? {
-        let configuration = NSImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
-        let image = NSImage(
-            systemSymbolName: "circle.bottomthird.split",
-            accessibilityDescription: "Worklog"
-        )?
-            .withSymbolConfiguration(configuration)
+        let image = Self.activityTraceImage()
+            ?? NSImage(systemSymbolName: "circle.dotted", accessibilityDescription: "Hago")
 
         image?.isTemplate = true
 
         return image
     }
 
-    @objc private func togglePopover() {
-        guard let button = statusItem.button else {
-            return
+    private static let activityTraceSVG = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" \
+    viewBox="2 2 20 20" fill="none" stroke="currentColor" stroke-width="2.4" \
+    stroke-linecap="round">\
+    <path d="M5.2 8.4A8.2 8.2 0 0 1 15.7 4.5"/>\
+    <path d="M18.6 7.3A8.2 8.2 0 0 1 13.4 20"/>\
+    <circle cx="9.8" cy="19.7" r="1.15" fill="currentColor" stroke="none"/>\
+    <circle cx="6.6" cy="17.9" r="1" fill="currentColor" stroke="none"/>\
+    <circle cx="4.6" cy="14.9" r="0.85" fill="currentColor" stroke="none"/>\
+    </svg>
+    """
+
+    private static func activityTraceImage() -> NSImage? {
+        guard let data = activityTraceSVG.data(using: .utf8),
+              let image = NSImage(data: data) else {
+            return nil
         }
 
-        if popover.isShown {
-            popover.performClose(nil)
-            return
+        let iconSize = NSSize(width: 18, height: 18)
+        let paddedImage = NSImage(
+            size: NSSize(width: iconSize.width + 2, height: iconSize.height),
+            flipped: false
+        ) { _ in
+            image.draw(
+                in: NSRect(origin: .zero, size: iconSize),
+                from: .zero,
+                operation: .sourceOver,
+                fraction: 1
+            )
+            return true
         }
 
-        button.highlight(true)
-        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        return paddedImage
     }
 
-    @objc private func popoverDidClose() {
-        statusItem.button?.highlight(false)
+    func menuWillOpen(_ menu: NSMenu) {
+        guard let menuContentView else {
+            return
+        }
+        menuContentView.frame.size = menuContentView.fittingSize
     }
 }

@@ -41,7 +41,7 @@ final class WindowLifecycleNSView: NSView {
         NotificationCenter.default.removeObserver(self)
 
         trackedWindow = window
-        appState?.appWindowDidAppear(id: id)
+        appState?.appWindowDidAppear(id: id, window: window)
 
         NotificationCenter.default.addObserver(
             self,

@@ -410,6 +410,9 @@ private struct RecentActivityTab: View {
             ActivityRuleInspectorView(inspection: inspection)
                 .environmentObject(appState)
         }
+        .onAppear {
+            appState.selectActivityDate(WorklogCalendar.shared.dayInterval(containing: Date()).start)
+        }
     }
 
     private func aggregatedActivityRow(_ group: AggregatedActivity) -> some View {
